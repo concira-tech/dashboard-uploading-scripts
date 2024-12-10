@@ -1,0 +1,14 @@
+{
+  "apps": [
+    {
+      "name": "upload-scripts",
+      "script": "gunicorn",
+      "args": "run:app -b 0.0.0.0:8000",
+      "exec_mode": "fork",
+      "interpreter": "python3",
+      "instances": 1,             
+      "autorestart": true,          
+      "restart_delay": 5000        
+    }
+  ]
+}
