@@ -1,0 +1,6 @@
+flask
+python-dotenv
+pandas
+firebase-admin
+openpyxl
+gunicorn
