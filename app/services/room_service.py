@@ -2,10 +2,14 @@ from flask import Blueprint, request, jsonify
 import pandas as pd
 import requests
 from app.helpers import validate_excel_file, upload_image_to_storage, upload_document_to_firestore, validate_row, REQUIRED_COLUMNS
+from app.auth.authMiddleware import verify_token
+from app.auth.authorization import authorize
 
 room_service_blueprint = Blueprint('room_service', __name__)
 
 @room_service_blueprint.route('/upload_excel', methods=['POST'])
+@verify_token
+@authorize(['manager'])
 def upload_excel():
     try:
         org_id = request.form.get('orgId')

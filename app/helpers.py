@@ -1,5 +1,5 @@
 import requests
-from firebase_admin import credentials, firestore, initialize_app, storage
+from firebase_admin import credentials, firestore, initialize_app, storage, db
 import pandas as pd
 
 REQUIRED_COLUMNS = [
@@ -137,3 +137,25 @@ def validate_row(row, index):
         })
 
     return errors
+
+def get_employee_permissions(user):
+
+    role = user.get('userType')
+    org_id = user.get('organizationId')
+    
+    # Reference to the role in the database
+    role_ref = db.reference(f"organizations/{org_id}/roles/{role}")
+    snapshot = role_ref.get()
+
+    if not snapshot:
+        raise ValueError("Role not found")
+
+    permissions = snapshot.get('permissions', {})
+
+    # Handle inherited permissions
+    inherited_permissions = snapshot.get('inherited_permissions')
+    if inherited_permissions:
+        inherited_permissions_data = get_employee_permissions({"userType": inherited_permissions, "organizationId": org_id})
+        permissions.update(inherited_permissions_data)
+
+    return permissions
